@@ -1,87 +1,78 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function Signup() {
     // State to handle the form data
-    const [formdata, setformdata] = useState({
+    const [formData, setFormData] = useState({
         username: '',
         password: ''
     });
 
+    // State to handle loading and error messages
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
     // Handle input changes
-    const handlechange = (e) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        setformdata(prevState => ({
+        setFormData(prevState => ({
             ...prevState,
             [name]: value
         }));
     };
 
     // Handle form submission
-    const handlesubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('form submitted', formdata);
+        setLoading(true);
+        setError('');
+        setSuccessMessage('');
 
-        try {
-            // Make an API call to the backend
-            const response = await axios.post('http://localhost:5000/api/auth/signup', formdata);
-
-            // Handle successful response
-            if (response.status === 201) {
-                console.log(response.data.msg); // You can show a success message here
-                // Optionally redirect the user or reset the form
-            }
-        } catch (err) {
-            // Handle error (if any)
-            console.error('Error during signup:', err);
-            if (err.response) {
-                // The request was made and the server responded with an error status
-                console.error('Error response:', err.response.data);
-            } else if (err.request) {
-                // The request was made but no response was received
-                console.error('No response received from server');
-            } else {
-                // Something else happened
-                console.error('Error message:', err.message);
-            }
-        }
+      const submitForm = async (e) =>{
+        e.preventDefault();
+        await axios.post("http://localhost:5000/api/auth/signup", formData)
+        .then((response)=>{
+           console.log('user added')
+          })
+    
+          .catch((error)=>{
+            console.log(error)
+          })
     };
+}
 
     return (
-        <div className="container mt-5">
-            <h1>Registration Form</h1>
-            <form className="col-md-6 max-auto" onSubmit={handlesubmit}>
-                <div className="mb-3">
-                    <label htmlFor="username" className="form-label">Username</label>
+        <div>
+            <h1>Signup</h1>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Username</label>
                     <input
                         type="text"
-                        className="form-control"
-                        id="username"
                         name="username"
-                        value={formdata.username}
-                        onChange={handlechange}
+                        value={formData.username}
+                        onChange={handleChange}
                         required
                     />
                 </div>
-
-                <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Password</label>
+                <div>
+                    <label>Password</label>
                     <input
                         type="password"
-                        className="form-control"
-                        id="password"
                         name="password"
-                        value={formdata.password}
-                        onChange={handlechange}
+                        value={formData.password}
+                        onChange={handleChange}
                         required
                     />
                 </div>
-
-                <div className="d-grid">
-                    <button type="submit" className="btn btn-primary">
-                        Signup
-                    </button>
-                </div>
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Signing up...' : 'Signup'}
+                </button>
             </form>
+
+            {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
+            {error && <div style={{ color: 'red' }}>{error}</div>}
         </div>
     );
 }
