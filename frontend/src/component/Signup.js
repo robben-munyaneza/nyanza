@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 function Signup() {
     // State to handle the form data
@@ -7,6 +9,10 @@ function Signup() {
         username: '',
         password: ''
     });
+
+    const navigate = useNavigate();
+
+    const[submit, setSubmit]=useState();
 
     // State to handle loading and error messages
     const [loading, setLoading] = useState(false);
@@ -24,23 +30,21 @@ function Signup() {
 
     // Handle form submission
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Stop the page from refreshing
         setLoading(true);
         setError('');
         setSuccessMessage('');
+        const response = await axios.post('http://localhost:5000/api/auth/signup', formData);
+        console.log(response.data); 
+        setSuccessMessage('User registered successfully!');
+        setFormData({ username: '', password: '' }); 
 
-      const submitForm = async (e) =>{
-        e.preventDefault();
-        await axios.post("http://localhost:5000/api/auth/signup", formData)
-        .then((response)=>{
-           console.log('user added')
-          })
+        setTimeout(() => {
+            navigate('/login');
+        }, 1000);
+
+  };
     
-          .catch((error)=>{
-            console.log(error)
-          })
-    };
-}
 
     return (
         <div>
@@ -66,7 +70,7 @@ function Signup() {
                         required
                     />
                 </div>
-                <button type="submit" disabled={loading}>
+                <button type="submit" disabled={loading} onClick={handleSubmit}>
                     {loading ? 'Signing up...' : 'Signup'}
                 </button>
             </form>
