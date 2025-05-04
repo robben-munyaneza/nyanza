@@ -36,19 +36,24 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // Use the correct field (username instead of email)
         const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
-       
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ msg: 'Invalid credentials' });
+        }
 
-        res.status(200).json({ msg: 'Login successful' });
+        // Send back the user data (don't send the password)
+        res.status(200).json({ 
+            msg: 'Login successful', 
+            user: { username: user.username } 
+        });
     } catch (err) {
         console.error('Error during login:', err);
-
         res.status(500).json({ msg: 'Server error', error: err.message });
     }
 };

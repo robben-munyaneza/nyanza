@@ -3,22 +3,16 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-    // State to handle the form data
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     });
 
     const navigate = useNavigate();
-
-    const[submit, setSubmit]=useState();
-
-    // State to handle loading and error messages
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    // Handle input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -27,23 +21,36 @@ function Login() {
         }));
     };
 
-    // Handle form submission
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Stop the page from refreshing
+        e.preventDefault();
         setLoading(true);
         setError('');
         setSuccessMessage('');
-        const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-        console.log(response.data); 
-        setSuccessMessage('successfully!');
-        setFormData({ username: '', password: '' });
-        
-        setTimeout(() => {
-            navigate('/dashboard');
-        }, 1000);
 
-  };
-    
+        try {
+            const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+
+            // Check for user data in response
+            if (response.data.user) {
+                // Store the user in localStorage
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+
+                setSuccessMessage('Login successful!');
+                setFormData({ username: '', password: '' });
+
+                // Redirect after short delay
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 1000);
+            } else {
+                setError(response.data.msg || 'Login failed');
+            }
+        } catch (err) {
+            setError(err.response?.data?.msg || 'Server error. Try again.');
+        }
+
+        setLoading(false);
+    };
 
     return (
         <div>
@@ -69,8 +76,8 @@ function Login() {
                         required
                     />
                 </div>
-                <button type="submit" disabled={loading} onClick={handleSubmit}>
-                    {loading ? 'logingin...' : 'login'}
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Logging in...' : 'Login'}
                 </button>
             </form>
 

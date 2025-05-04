@@ -26,7 +26,7 @@ function Dashboard() {
             <h1>Dashboard</h1>
             {user ? (
                 <>
-                    <p>Welcome, <strong>{user.username}</strong>!</p>
+                   <p>Welcome, <strong>{user.username}</strong>!</p>
                     <button onClick={handleLogout}>Logout</button>
                 </>
             ) : (
