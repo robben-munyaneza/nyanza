@@ -7,4 +7,5 @@ const jobPositionSchema = new mongoose.Schema({
   requiredQualifications: { type: String, required: true }
 });
 
-module.exports = mongoose.model('JobPosition', jobPositionSchema);
+// ✅ Prevent OverwriteModelError
+module.exports = mongoose.models.JobPosition || mongoose.model('JobPosition', jobPositionSchema);

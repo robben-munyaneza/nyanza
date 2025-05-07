@@ -1,6 +1,8 @@
 require('dotenv').config(); // 👈 MUST be first
 const router =require('./routes/auth.js')
 const jobRoutes = require('./routes/jobposition');
+const applicantRoutes = require('./routes/Applicants');
+const applicationRoutes = require('./routes/application');
 const express = require('express');
 const connectDB = require('./config/db');
 const cors= require('cors')
@@ -13,6 +15,8 @@ connectDB();
 
 app.use("/api/auth",router)
 app.use('/api/jobposition', jobRoutes);
+app.use('/api/Applicant', applicantRoutes);
+app.use('/api/applications', applicationRoutes);
 
 
 const PORT = process.env.PORT || 5000;
