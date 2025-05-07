@@ -95,6 +95,7 @@ function Job_Position() {
               <td>{job.department}</td>
               <td>{job.description}</td>
               <td>{job.requiredQualifications}</td>
+              <td>{job.requiredQualifications}</td>
               <td><button onClick={() => handleEdit(job)}>Edit</button><button onClick={() => handleDelete(job._id)} style={{ marginLeft: '5px' }}>Delete</button> </td>
             </tr>
           ))}
